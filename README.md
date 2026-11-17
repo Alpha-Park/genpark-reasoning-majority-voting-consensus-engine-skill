@@ -1,105 +1,51 @@
 # genpark-reasoning-majority-voting-consensus-engine-skill
 
-<div align="center">
+Combine candidate answers using the existing Python client's answer normalization, token Jaccard similarity, and confidence-weighted voting. The result includes the winning normalized answer, vote percentages, and cluster breakdown.
 
-[![Python 3.9+](https://img.shields.io/badge/python-3.9%2B-blue.svg?style=for-the-badge&logo=python)](https://www.python.org/)
-[![License MIT](https://img.shields.io/badge/license-MIT-green.svg?style=for-the-badge)](LICENSE)
-[![MCP Compatible](https://img.shields.io/badge/MCP-100%25%20Compatible-purple.svg?style=for-the-badge&logo=anthropic)](https://modelcontextprotocol.io/)
-[![Zero Dependencies](https://img.shields.io/badge/Dependencies-0%20(Stdlib%20Only)-brightgreen.svg?style=for-the-badge)](requirements.txt)
+This tool compares answers supplied by the caller. It does not generate reasoning rollouts, prove answers correct, or call a language model. Its confidence percentage measures agreement within the supplied candidates.
 
-<p align="center">
-  <b>Production-Grade GenPark Reasoning & Verification Agent Skill</b> • <b>100% Standard Library Python</b> • <b>Native Model Context Protocol (MCP)</b>
-</p>
+## Direct Python Client
 
-</div>
+The core client uses only the Python standard library:
 
----
+```python
+from client import GenParkReasoningMajorityVotingConsensusEngine
 
-## Executive Overview & Architectural Motivation
-
-With the breakthrough of **DeepSeek-R1**, **OpenAI o1/o3**, and thinking models, artificial intelligence shifted fundamentally from brute-force pretraining to **Test-Time Compute (TTC)** and **System 2 deliberate reasoning**. To achieve superhuman accuracy without hallucinations, autonomous agents require rigorous mathematical verification at every step of their thought trajectory.
-
-This skill library distills the core mathematical logic and agent orchestration models powering the **GenPark Reasoning & Verification Engine**:
-
-- **Process Reward Modeling (PRM)**: Step-level verification and Monte Carlo Tree Search (MCTS) exploration.
-- **Dynamic Test-Time Compute Allocation**: Problem-entropy-driven token budgeting and temperature annealing.
-- **Self-Consistency & Formal Verification**: Mathematical consensus clustering and propositional logic proof checking.
-- **Zero-Dependency Protocol Parity**: Full native Model Context Protocol (MCP) compliance for agentic runtime integration.
-
----
-
-## Architecture Diagram
-
-```mermaid
-flowchart TD
-    subgraph ProblemInput["Complex Problem & Reasoning Request"]
-        Query[Math / Code / Logic Problem] --> Allocator["Test-Time Compute Allocator"]
-    end
-
-    subgraph SearchCore["Deliberate Search & MCTS Verification"]
-        Allocator --> SearchTree["MCTS Tree Search & PRM Evaluator"]
-        SearchTree --> Auditor["Counterfactual Backtracking Auditor"]
-        Auditor --> ProofChecker["Formal Symbolic Proof Checker"]
-    end
-
-    subgraph ConsensusLayer["Consensus & Final Output"]
-        ProofChecker --> ConsensusEngine["Majority Voting Consensus Engine"]
-        ConsensusEngine --> FinalVerifiedResult[Rigorous Verified Solution / MCP Payload]
-    end
+engine = GenParkReasoningMajorityVotingConsensusEngine()
+result = engine.resolve_majority_consensus([
+    {"rollout_id": "a", "output_text": "Answer = 42", "confidence_score": 0.9},
+    {"rollout_id": "b", "output_text": "42", "confidence_score": 0.8},
+])
+print(result)
 ```
 
----
+## Local MCP Setup
 
-## Technical Specifications & Features
+The MCP server exposes `execute_reasoning_majority_voting`, which passes `candidate_rollouts` to the client's consensus algorithm. Running the server requires **Python 3.10+** and the official **`mcp>=1.0.0,<2` SDK**. From the repository directory:
 
-| Capability | Specification |
-| :--- | :--- |
-| **Runtime Environment** | Python 3.9+ (Standard Library Only) |
-| **External Dependencies** | **None (0 packages)** |
-| **Protocol Compatibility** | Anthropic Model Context Protocol (MCP) STDIO JSON-RPC 2.0 |
-| **Architecture Paradigm** | Pure Functional & Mathematical Modeling |
-| **Deployment Mode** | Headless Agent Skill, CLI Client, or MCP Server |
-
----
-
-## Quickstart & Usage
-
-### 1. Direct Python Client Execution
 ```bash
-python example_usage.py
+python -m venv .venv
+.venv/bin/python -m pip install -r requirements.txt
+.venv/bin/python mcp_server.py
 ```
 
-### 2. Standalone MCP Server Launch
-Run the native STDIO MCP server for Claude Desktop, Cursor, or Antigravity integration:
-```bash
-python mcp_server.py
-```
+On Windows, use `.venv\Scripts\python.exe` instead. The server waits for MCP messages over stdio; it does not expose a public HTTP endpoint.
 
-### 3. Model Context Protocol (MCP) Config
-Add to your `claude_desktop_config.json` or agent runner config:
+For Claude Desktop or another MCP client, replace the absolute paths below with your checkout and its environment's Python executable:
+
 ```json
 {
   "mcpServers": {
     "genpark-reasoning-majority-voting-consensus-engine-skill": {
-      "command": "python",
-      "args": ["path/to/genpark-reasoning-majority-voting-consensus-engine-skill/mcp_server.py"]
+      "command": "/absolute/path/to/genpark-reasoning-majority-voting-consensus-engine-skill/.venv/bin/python",
+      "args": ["/absolute/path/to/genpark-reasoning-majority-voting-consensus-engine-skill/mcp_server.py"]
     }
   }
 }
 ```
 
----
-
-## Frequently Asked Questions (FAQ)
-
-#### Q1: What makes GenPark Reasoning Skills unique?
-Engineered with **zero external dependencies** using pure Python standard library code. This ensures instantaneous cold starts, sub-millisecond execution overhead, and zero package version conflicts across diverse agent runtime environments.
-
-#### Q2: How do I test this MCP server locally?
-Run `python mcp_server.py --test` to verify MCP protocol discovery and tool schema negotiation.
-
----
+Verify the connection by completing `initialize` and requesting `tools/list` from an MCP client. The GitHub repository URL is a source-code location, not an MCP server URL.
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+MIT. See [LICENSE](LICENSE).

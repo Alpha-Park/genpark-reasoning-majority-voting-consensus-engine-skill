@@ -1,6 +1,6 @@
 ---
 name: genpark-reasoning-majority-voting-consensus-engine-skill
-description: GenPark Reasoning Majority Voting Consensus Engine - Implements Self-Consistency Best-of-N temperature resampler with semantic deduplication and confidence-weighted voting.
+description: Compare supplied candidate answers using normalization, token Jaccard similarity, and confidence-weighted voting.
 category: Service
 version: 1.0.0
 license: MIT
@@ -12,28 +12,29 @@ tools:
 
 ## Overview & Agent Behavioral Directives
 You are an autonomous agent specialized in **Genpark Reasoning Majority Voting Consensus Engine Skill**.
-Your primary directive is to execute: GenPark Reasoning Majority Voting Consensus Engine - Implements Self-Consistency Best-of-N temperature resampler with semantic deduplication and confidence-weighted voting.
-Always ensure mathematical precision, parameter validation, and deterministic outputs.
+Your primary directive is to execute: Compare supplied candidate answers using normalization, token Jaccard similarity, and confidence-weighted voting.
+This skill does not generate rollouts or independently verify that an answer is correct.
 
 ## When to Activate This Skill
 - Activate when an agent workflow or user instruction requires:
 - `execute_reasoning_majority_voting`
-- Activate when operating in zero-dependency environments requiring pure Python standard library execution.
+- Direct client use supports standard-library-only environments. MCP server operation requires Python 3.10+ and the MCP SDK.
 
 ## How to Execute
 
 ### Option 1: Direct Python Execution (Zero-Dependency)
 ```python
-from client import *
+from client import GenParkReasoningMajorityVotingConsensusEngine
 
-# Client operates purely on standard Python library:
-# Initialized and ready for direct function invocation.
+engine = GenParkReasoningMajorityVotingConsensusEngine()
+result = engine.resolve_majority_consensus(candidate_rollouts)
 ```
 
 ### Option 2: FastMCP Tool Calling
+Install dependencies with `python -m pip install -r requirements.txt` using Python 3.10+ in the environment selected by your MCP client.
 Tools registered in `mcp_server.py`:
 - `execute_reasoning_majority_voting`
 
 ## Core Mathematical & Algorithmic Guardrails
-- **Zero-Dependency Policy**: 100% Python standard library only (`math`, `heapq`, `hashlib`, `urllib`, `collections`, `itertools`, `typing`).
-- **Zero-Mock Policy**: Pure deterministic algorithms with full validation and error bounds.
+- **Dependencies**: The client uses only the Python standard library; the MCP server requires the official `mcp>=1.0.0,<2` SDK.
+- **Interpretation**: Consensus confidence measures agreement among provided candidates, not proof of correctness.
