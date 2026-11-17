@@ -1,1 +1,2 @@
-# Zero external dependencies required -- Python 3.9+ standard library only
+# The client algorithm uses the standard library; the MCP server requires Python 3.10+.
+mcp>=1.0.0,<2
